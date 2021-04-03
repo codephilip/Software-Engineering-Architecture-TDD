@@ -10,11 +10,44 @@ public class Homework2 {
     int invocationCount = 0;
     StringBuilder output = new StringBuilder();
 
-    class ThingDoer {
-        void doIt() {
+    interface IDoAThing {
+
+        void doIt();
+    }
+
+    class ThingProxy implements IDoAThing {
+
+        IDoAThing realThing;
+
+        ThingProxy(IDoAThing real) {
+
+            realThing = real;
+        }
+
+        @Override
+        public void doIt() {
+
+            invocationCount++;
+            realThing.doIt();
+        }
+    }
+
+    class ThingDoer implements IDoAThing {
+
+        @Override
+        public void doIt() {
             output.append("Did it!\n");
         }
     }
+
+    class ThingFactory {
+
+        IDoAThing createThing() {
+
+            return new ThingProxy(new ThingDoer());
+        }
+    }
+
 
     //=======================================================================
     // Your boss wants to know how many times a method on a given class is
@@ -28,7 +61,9 @@ public class Homework2 {
 
         // Step 2: replace this new expression with a factory to produce
         //         IDoAThings
-        ThingDoer thingDoer = new ThingDoer();
+        ThingFactory thingFactory = new ThingFactory();
+
+        IDoAThing thingDoer = thingFactory.createThing();
 
         // Step 3: use the factory to insert a proxy object that wraps
         //         a ThingDoer and increments the invocationCount
@@ -46,6 +81,12 @@ public class Homework2 {
         // to the underlying ThingDoer
         assertEquals(output.toString(),
                 "Did it!\nDid it!\nDid it!\n");
+    }
+
+    public static void main(String[] args) {
+
+
+
     }
 
 
